@@ -1,0 +1,23 @@
+# Virtual environment folder (replace 'venv' with your env folder name if different)
+venv/
+
+# VS Code settings folder
+.vscode/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Log files
+*.log
+
+# Environment and configuration files (optional, depending on usage)
+.env
+.DS_Store  # MacOS hidden file
+
+# Streamlit cache
+.streamlit/
