@@ -35,7 +35,7 @@ The dataset was provided in CSV format. Upon loading, the shape of the dataset w
 
 As a first step, **each column was individually analyzed and processed** based on its data type and relevance to the target variable.  
 
-> 🛠 **Note**: Detailed column-wise preprocessing decisions are documented in the ppt file in the repo.
+> 🛠 **Note**: Detailed column-wise preprocessing decisions are documented in the Presentation Sprint1.pdf file in the repo.
 
 ### Common preprocessing techniques used:
 - Handling missing values
