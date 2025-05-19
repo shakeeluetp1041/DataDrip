@@ -4,6 +4,7 @@ import datetime
 import pandas as pd
 import requests
 import json
+import joblib
 
 st.title("DataDrip: Water Pumps Functionality Prediction")
 #st.subheader("A Streamlit App for Monitoring and Predicting Pump Failures")
@@ -150,3 +151,36 @@ if st.button("Click to Predict"):
         st.error(f"Request failed: {e}")
     except json.JSONDecodeError:
         st.error("Invalid JSON received from the API.")
+
+
+st.title("Scenario 2: Model Testing with Known Labels (Accuracy Evaluation)")
+# Load test data
+X_test = joblib.load("X_test.pkl")
+y_test = joblib.load("y_test.pkl")
+# Set number of samples to show
+num_samples = st.slider("Select number of random test samples", min_value=1, max_value=2376, value=2376)
+# Random sample
+random_indices = np.random.choice(len(X_test), size=num_samples, replace=False)
+X_sample = X_test.iloc[random_indices]
+y_sample = y_test.iloc[random_indices]
+
+
+
+
+# Preprocess and predict
+X_transformed = preprocessor.transform(X_sample)
+predictions = selected_model.predict(X_transformed)
+# Prepare display data
+results = pd.DataFrame({
+    'Index': random_indices,
+    'True Label': [inv_target_map_dict.get(label, "Unknown") for label in y_sample],
+    'Predicted Label': [inv_target_map_dict.get(pred, "Unknown") for pred in predictions]
+})
+# Show results
+#st.subheader("Prediction Results (Index, True Label, Predicted Label)")
+#st.dataframe(results)
+# Compute accuracy
+from sklearn.metrics import accuracy_score
+test_accuracy = accuracy_score(y_sample, predictions)
+st.subheader("Test Accuracy on Selected Samples")
+st.write(f"Accuracy: {test_accuracy:.4f}")
