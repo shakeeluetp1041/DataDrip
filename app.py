@@ -25,7 +25,7 @@ model_dict = {
 }
 
 # Sidebar main title (larger and bold)
-st.sidebar.title("Scenario 1: User Input")
+st.sidebar.title("User Input Pannel")
 
 # Sidebar title: model selection
 st.sidebar.subheader("Step 01: Select the Model")
