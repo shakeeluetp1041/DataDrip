@@ -153,7 +153,7 @@ if st.button("Click to Predict"):
         st.error("Invalid JSON received from the API.")
 
 
-st.title("Scenario 2: Model Testing with Known Labels (Accuracy Evaluation)")
+st.title("Scenario 2: Model Testing with Test Data For Accuracy Evaluation")
 # Load test data
 X_test = joblib.load("X_test.pkl")
 y_test = joblib.load("y_test.pkl")
@@ -164,23 +164,35 @@ random_indices = np.random.choice(len(X_test), size=num_samples, replace=False)
 X_sample = X_test.iloc[random_indices]
 y_sample = y_test.iloc[random_indices]
 
+# Combine into a new DataFrame
+test_df = X_sample.copy()
+test_df["target"] = y_sample
+test_df = test_df.replace({np.nan: None})
+ # Format the date column before sending to backend
+if 'date_recorded' in test_df.columns:
+    try:
+        test_df['date_recorded'] = pd.to_datetime(test_df['date_recorded']).dt.strftime('%Y-%m-%d')
+    except Exception as e:
+        st.error(f"Error in date formatting: {e}")
+
+if st.button("Evaluate Model Test Accuracy"):
+    payload = {
+                "df": test_df.to_dict(orient="records"),
+                "model_name": selected_model_name
+            }
+   
+    response = requests.post("http://127.0.0.1:8000/make_prediction_testdata", json=payload)
+    if response.status_code == 200:
+                result = response.json()
+                accuracy = result.get("accuracy", None)
+                #st.success(f"Accuracy on Uploaded Test Data: {accuracy:.2%}")
+                st.subheader("Test Accuracy on Selected Samples")
+                st.write(f"Accuracy: {accuracy:.4f}")
+    else:
+        st.error(f"API Error {response.status_code}: {response.text}")
 
 
 
-# Preprocess and predict
-X_transformed = preprocessor.transform(X_sample)
-predictions = selected_model.predict(X_transformed)
-# Prepare display data
-results = pd.DataFrame({
-    'Index': random_indices,
-    'True Label': [inv_target_map_dict.get(label, "Unknown") for label in y_sample],
-    'Predicted Label': [inv_target_map_dict.get(pred, "Unknown") for pred in predictions]
-})
-# Show results
-#st.subheader("Prediction Results (Index, True Label, Predicted Label)")
-#st.dataframe(results)
-# Compute accuracy
-from sklearn.metrics import accuracy_score
-test_accuracy = accuracy_score(y_sample, predictions)
-st.subheader("Test Accuracy on Selected Samples")
-st.write(f"Accuracy: {test_accuracy:.4f}")
+
+
+

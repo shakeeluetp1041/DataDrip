@@ -4,6 +4,8 @@ from typing import List, Dict, Any
 from fastapi.responses import JSONResponse
 import joblib
 import pandas as pd
+from sklearn.metrics import accuracy_score
+import numpy as np
 # Load preprocessor pipeline for input column processing to make them compatible to pass through the model
 preprocessor = joblib.load('preprocessor.joblib')
 # Load models
@@ -64,3 +66,36 @@ def MAKE_PREDICTION(request: PredictionRequest):
             content={"error": str(e)}
         )
 
+@app.post("/make_prediction_testdata")
+def make_prediction_testdata(request: PredictionRequest):
+    try:
+        input_df = pd.DataFrame(request.df).replace({None: np.nan})
+        model_name = request.model_name
+
+        if model_name not in model_dict:
+            raise HTTPException(status_code=400, detail=f"Model '{model_name}' not found.")
+
+        if 'target' not in input_df.columns:
+            raise HTTPException(status_code=400, detail="Missing 'target' column for accuracy calculation.")
+
+        # Separate target and features
+        y_true = input_df['target']
+      
+
+        X = input_df.drop(columns=['target'])
+
+        # Transform input and predict
+        X_transformed = preprocessor.transform(X)
+        model = model_dict[model_name]
+        y_pred = model.predict(X_transformed)
+
+        # Calculate accuracy
+        accuracy = accuracy_score(y_true, y_pred)
+
+
+        return {
+            "accuracy": accuracy
+            }
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
