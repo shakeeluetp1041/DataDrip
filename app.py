@@ -2,42 +2,39 @@ import streamlit as st
 import numpy as np
 import datetime
 import pandas as pd
-import joblib
+import requests
 import json
 
 st.title("DataDrip: Water Pumps Functionality Prediction")
 #st.subheader("A Streamlit App for Monitoring and Predicting Pump Failures")
 #st.markdown("This project uses machine learning to predict pump maintenance needs based on input parameters.")
 
-# Load preprocessor pipeline for input column processing to make them compatible to pass through the model
-preprocessor = joblib.load('preprocessor.joblib')
-# Load models
-dt_model = joblib.load('DecisionTree_model.joblib')
-rf_model = joblib.load('RandomForest_model.joblib')
-xgb_model = joblib.load('XGBoost_model.joblib')
 
-# Model mapping
-model_dict = {
-    'Decision Tree': dt_model,
-    'Random Forest': rf_model,
-    'XGBoost': xgb_model
-}
+
 
 # Sidebar main title (larger and bold)
 st.sidebar.title("User Input Pannel")
 
 # Sidebar title: model selection
-st.sidebar.subheader("Step 01: Select the Model")
+st.sidebar.subheader("Step 01: Select the Model Name")
 # Sidebar: Select model
-selected_model_name = st.sidebar.selectbox('Select a model', list(model_dict.keys()))
-selected_model = model_dict[selected_model_name]
+#selected_model_name = st.sidebar.selectbox('Select a model', list(model_dict.keys()))
+avaiable_model_name_list=['Decision Tree','Random Forest','XGBoost']
+selected_model_name = st.sidebar.selectbox('Select a model', avaiable_model_name_list)
+
+#selected_model = model_dict[selected_model_name]
+
+
+
 st.sidebar.subheader("Step 02: Select Input Features")
 
 # Set default to today's date
 default_date = datetime.date.today()
 # Date input widget with calendar popup
 selected_date = st.sidebar.date_input("Select a date:", value=default_date) # after preprpocessing, the yeaer will be extracted
-data = {'date_recorded': [selected_date]}
+# Convert date to string for JSON serialization
+date_str = selected_date.strftime('%Y-%m-%d')
+data = {'date_recorded': [date_str]}
 df = pd.DataFrame(data)
 
 
@@ -125,53 +122,31 @@ st.write("User Input Sample for pump functionality prediction:")
 st.dataframe(df.style.format({'longitude': '{:.6f}'}))
 
 
-# Mapping from label to integer
-target_map_dict = {
-    'functional': 2,
-    'functional needs repair': 1,
-    'non functional': 0
-}
 
-# Inverse mapping: from integer back to label
-inv_target_map_dict = {v: k for k, v in target_map_dict.items()}
 
 # Make Prediction
 st.title("Scenario 1: Predicting Pump Status for New Data (User Input)")
 # Prediction button
-if st.button("Click to Predict"):
-    # Preprocess first
-    transformed_input = preprocessor.transform(df)
-    # Then predict
-    prediction = selected_model.predict(transformed_input)[0]
-    # Convert numeric prediction to readable label
-    label_prediction = inv_target_map_dict.get(prediction, "Unknown")
-    # Show result
-    st.success(f"Predicted Pump Status: {label_prediction} (Code: {prediction})")
 
-st.title("Scenario 2: Model Testing with Known Labels (Accuracy Evaluation)")
-# Load test data
-X_test = joblib.load("X_test.pkl")
-y_test = joblib.load("y_test.pkl")
-# Set number of samples to show
-num_samples = st.slider("Select number of random test samples", min_value=1, max_value=2376, value=2376)
-# Random sample
-random_indices = np.random.choice(len(X_test), size=num_samples, replace=False)
-X_sample = X_test.iloc[random_indices]
-y_sample = y_test.iloc[random_indices]
-# Preprocess and predict
-X_transformed = preprocessor.transform(X_sample)
-predictions = selected_model.predict(X_transformed)
-# Prepare display data
-results = pd.DataFrame({
-    'Index': random_indices,
-    'True Label': [inv_target_map_dict.get(label, "Unknown") for label in y_sample],
-    'Predicted Label': [inv_target_map_dict.get(pred, "Unknown") for pred in predictions]
-})
-# Show results
-#st.subheader("Prediction Results (Index, True Label, Predicted Label)")
-#st.dataframe(results)
-# Compute accuracy
-from sklearn.metrics import accuracy_score
-test_accuracy = accuracy_score(y_sample, predictions)
-st.subheader("Test Accuracy on Selected Samples")
-st.write(f"Accuracy: {test_accuracy:.4f}")
+    
+if st.button("Click to Predict"):
+    try:
+        payload = {
+            "df": df.to_dict(orient="records"),
+            "model_name": selected_model_name
+        }
+
+        response = requests.post("http://127.0.0.1:8000/make_prediction", json=payload)
+
+        if response.status_code == 200:
+            result = response.json()
+            label_prediction = result.get("prediction", "Unknown")
+            prediction_code = result.get("Code", "N/A")
+            st.success(f"Predicted Pump Status: {label_prediction} (Code: {prediction_code})")
+        else:
+            st.error(f"API Error {response.status_code}: {response.text}")
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request failed: {e}")
+    except json.JSONDecodeError:
+        st.error("Invalid JSON received from the API.")
