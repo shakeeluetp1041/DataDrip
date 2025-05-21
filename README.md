@@ -1,7 +1,5 @@
 # 🚰 Pump It Up: Data Mining the Water Table
 
-![DrivenData Logo](https://www.drivendata.org/static/images/drivendata-logo.svg)
-
 This project is based on the [DrivenData competition: Pump It Up - Data Mining the Water Table](https://www.drivendata.org/competitions/7/pump-it-up-data-mining-the-water-table/). The goal is to predict the functionality status of water pumps across Tanzania based on various environmental, geospatial, and operational features.
 
 ---
@@ -71,14 +69,3 @@ For each class (1-vs-rest), plotted:
 - Color-coded probability contours
 
 ---
-
-## 📁 Project Structure
-
-```bash
-├── data/                  # Dataset (if small enough or scripts to download it)
-├── notebooks/             # Jupyter notebooks for EDA, training, tuning, and visualization
-├── src/                   # Custom transformers, pipeline utilities
-├── models/                # Trained models (optional)
-├── visuals/               # Saved plots: PCA, t-SNE, ROC curves, etc.
-├── README.md              # This file
-├── requirements.txt       # Project dependencies
