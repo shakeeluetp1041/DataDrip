@@ -38,7 +38,7 @@ class PredictionRequest(BaseModel):
 
 
 @app.post("/make_prediction")
-def MAKE_PREDICTION(request: PredictionRequest):
+def MAKE_PREDICTION(request: PredictionRequest): # under the hood data is parsed using request=PredictionRequest(**request.json()).Now request is a pydentic object with type hint PredictionRequest
     try:
         input_df = pd.DataFrame(request.df)
         model_name = request.model_name
