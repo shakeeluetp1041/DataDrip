@@ -2,11 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY . .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install streamlit requests
 
-
+COPY *.py .
+COPY *.json .
+COPY *.ipynb .
+COPY *.docx .
+COPY *.pkl .
 
 # Expose Streamlit port
 EXPOSE 8501
