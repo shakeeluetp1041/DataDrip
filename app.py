@@ -137,7 +137,7 @@ if st.button("Click to Predict"):
             "model_name": selected_model_name
         }
 
-        response = requests.post("http://127.0.0.1:8000/make_prediction", json=payload)
+        response = requests.post("http://fastapi:8000/make_prediction", json=payload)
 
         if response.status_code == 200:
             result = response.json()
@@ -181,7 +181,7 @@ if st.button("Evaluate Model Test Accuracy"):
                 "model_name": selected_model_name
             }
    
-    response = requests.post("http://127.0.0.1:8000/make_prediction_testdata", json=payload)
+    response = requests.post("http://fastapi:8000/make_prediction_testdata", json=payload)
     if response.status_code == 200:
                 result = response.json()
                 accuracy = result.get("accuracy", None)
