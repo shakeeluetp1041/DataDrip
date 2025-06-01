@@ -8,7 +8,6 @@ RUN pip install streamlit requests
 
 COPY *.py .
 COPY *.json .
-COPY *.ipynb .
 COPY *.docx .
 COPY *.pkl .
 
