@@ -1,0 +1,38 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment
+venv/
+
+
+
+# Ignore data and intermediate files
+*.csv
+*.xlsx
+*.log
+filenames.txt
+Readme.md
+
+
+# Ignore large binaries not needed in image
+*.pdf
+*.docx
+*.html
+
+# Ignore source files used only during training
+dummy.ipynb
+testing.ipynb
+
+# Ignore version control and editor settings
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Ignore other
+*.zip
+*.tar
+*.tar.gz
