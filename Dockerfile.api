@@ -1,20 +1,26 @@
-# Use official Python slim image
+# Use official Python slim image as base
 FROM python:3.11-slim
 
 # Set workdir inside container
 WORKDIR /app
 
-# Copy requirements and install
+# Copy the requirements file first to leverage Docker's cache and speed up rebuilds
 COPY requirements.txt .
+
+# Install all the dependencies in the requirements.txt file
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source code and models
+# If needed, install FastAPI and Uvicorn explicitly (if not in requirements.txt)
+RUN pip install --no-cache-dir fastapi uvicorn
+
+# Copy the backend source code and models
 COPY api_app.py .
 COPY *.joblib .
 COPY *.pkl .
 
-# Expose port FastAPI runs on
+# Expose the port FastAPI will run on
 EXPOSE 8000
 
-# Run the FastAPI app with uvicorn
+# Run the FastAPI app with Uvicorn
 CMD ["uvicorn", "api_app:app", "--host", "0.0.0.0", "--port", "8000"]
+

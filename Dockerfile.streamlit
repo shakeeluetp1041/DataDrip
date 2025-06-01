@@ -1,17 +1,26 @@
+# Use Python 3.11 slim image as base
 FROM python:3.11-slim
 
+# Set the working directory to /app
 WORKDIR /app
 
+# Copy the requirements file first to leverage Docker's cache
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install streamlit requests
 
+# Install the requirements
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Streamlit and requests (if required in your case)
+RUN pip install --no-cache-dir streamlit requests
+
+# Copy the necessary files into the container
 COPY *.py .
 COPY *.json .
 COPY *.docx .
 COPY *.pkl .
 
-# Expose Streamlit port
+# Expose the port that Streamlit will run on
 EXPOSE 8501
 
+# Run the Streamlit app
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
