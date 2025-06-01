@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy the requirements file first to leverage Docker's cache and speed up rebuilds
 COPY requirements.txt .
 
-# Install all the dependencies in the requirements.txt file
-RUN pip install --no-cache-dir -r requirements.txt
+# Install all the dependencies, but skip pywin32 for non-Windows systems (Linux in Docker)
+RUN if [ "$(uname)" != "Linux" ]; then pip install --no-cache-dir -r requirements.txt; else sed -i '/pywin32==310/d' requirements.txt && pip install --no-cache-dir -r requirements.txt; fi
 
 # If needed, install FastAPI and Uvicorn explicitly (if not in requirements.txt)
 RUN pip install --no-cache-dir fastapi uvicorn
@@ -23,4 +23,3 @@ EXPOSE 8000
 
 # Run the FastAPI app with Uvicorn
 CMD ["uvicorn", "api_app:app", "--host", "0.0.0.0", "--port", "8000"]
-
