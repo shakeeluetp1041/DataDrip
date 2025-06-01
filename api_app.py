@@ -32,7 +32,7 @@ inv_target_map_dict = {v: k for k, v in target_map_dict.items()}
 
 app= FastAPI()
 class PredictionRequest(BaseModel):
-    df: List[Dict[str, Any]]
+    df: List[Dict[str, Any]]   
     model_name: str
 
 
