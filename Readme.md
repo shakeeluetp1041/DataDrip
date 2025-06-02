@@ -22,7 +22,7 @@ This project predicts the **functional status** of water pumps in Tanzania using
 | Random Forest | 0.8141         | 0.7765        |
 | XGBoost       | 0.8607         | 0.8068        |
 
-XGBoost performed best overall and is used as the default model for prediction.
+XGBoost performed best overall.
 
 ---
 
@@ -63,7 +63,7 @@ You have **two options** to run this project:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/water-pump-predictor.git
+   git clone https://github.com/shakeeluetp1041/DataDrip.git
    cd water-pump-predictor
    ```
 
