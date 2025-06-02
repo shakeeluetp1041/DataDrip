@@ -1,65 +1,154 @@
-# 💧 Waterpumps Functionality Predictions Across Tanzania
+# Water Pump Functional Status Predictor
 
-This project focuses on predicting the **functional status of waterpumps in Tanzania** using machine learning techniques. The aim is to assist government and aid organizations in efficiently identifying which waterpoints need maintenance or replacement, ultimately improving access to clean water across the country.
-
----
-
-## 📊 Dataset Overview
-
-- **Total Records**: 59,400  
-- **Total Features**: 41 (including the target)  
-- **Target Variable**: `status_group`  
-  - `functional`  
-  - `functional needs repair`  
-  - `non functional`
-
-The dataset was provided in CSV format. Upon loading, the shape of the dataset was found to be:
-# 💧 Waterpumps Functionality Predictions Across Tanzania
-
-This project focuses on predicting the **functional status of waterpumps in Tanzania** using machine learning techniques. The aim is to assist government and aid organizations in efficiently identifying which waterpoints need maintenance or replacement, ultimately improving access to clean water across the country.
+This project predicts the **functional status** of water pumps in Tanzania using machine learning. It compares three different classifiers and serves predictions through a user-friendly **Streamlit interface** with a **FastAPI backend**.
 
 ---
 
-## 📊 Dataset Overview
+## 🚀 Overview
 
-- **Total Records**: 59,400  
-- **Total Features**: 41 (including the target)  
-- **Target Variable**: `status_group`  
-  - `functional`  
-  - `functional needs repair`  
-  - `non functional`
-
-The dataset was provided in CSV format. Upon loading, the shape of the dataset was found to be:(59400, 41)
-
-## 🔧 Data Processing
-
-As a first step, **each column was individually analyzed and processed** based on its data type and relevance to the target variable.  
-
-> 🛠 **Note**: Detailed column-wise preprocessing decisions are documented in the Presentation Sprint1.pdf file in the repo.
-
-### Common preprocessing techniques used:
-- Handling missing values
-- Encoding high-cardinality categorical features
-- Ordinal, label and one-hot encoding
-- Dropping uninformative or duplicate features
-
+- **Frontend**: Built with [Streamlit](https://streamlit.io/)
+- **Backend**: Powered by [FastAPI](https://fastapi.tiangolo.com/)
+- **ML Models**: Decision Tree, Random Forest, XGBoost
+- **Preprocessing**: Column-wise pipeline for data transformation
+- **Deployment**: Dockerized using Docker Desktop and Docker Hub
 
 ---
 
-## 🚀 Model Training
+## 🧠 Model Comparison
 
-We employed the **XGBoost Classifier** for this multi-class classification problem due to its robustness and ability to handle missing data and mixed feature types effectively.
+| Model         | Train Accuracy | Test Accuracy |
+|---------------|----------------|---------------|
+| Decision Tree | 0.7672         | 0.7496        |
+| Random Forest | 0.8141         | 0.7765        |
+| XGBoost       | 0.8607         | 0.8068        |
 
-### ✅ Results:
-- **Training Accuracy**: `87.09%`  
-- **Testing Accuracy**: `81.77%`
+XGBoost performed best overall and is used as the default model for prediction.
 
 ---
 
-## 📌 Project Highlights
+## 📁 Project Structure
 
-- End-to-end data cleaning and preprocessing tailored per feature  
-- Efficient handling of high-cardinality and mixed-type features  
-- Use of **gradient boosting** for powerful and scalable classification  
-- Practical insights for deployment in rural infrastructure monitoring
+| File               | Purpose                                     |
+|--------------------|---------------------------------------------|
+| `app.py`           | Streamlit app to capture user input         |
+| `api_app.py`       | FastAPI backend to handle predictions       |
+| `helper_function.py`| Functions used in the prediction pipeline  |
+| `preprocessor.joblib` | ColumnTransformer preprocessing pipeline |
+| `*_model.joblib`   | Trained ML models (DecisionTree, RF, XGBoost) |
+| `requirements.txt` | Python dependencies                         |
+| `docker-compose.yml` | Docker config to run the full stack      |
 
+---
+
+## 🛠️ How It Works
+
+1. **User Input (Frontend)**: Users enter pump details in Streamlit.
+2. **Data Transfer**: Streamlit sends this input to the FastAPI backend.
+3. **Prediction (Backend)**: The backend applies preprocessing and runs the input through a trained model.
+4. **Output**: The result (functional, needs repair, non-functional) is sent back and displayed in the Streamlit UI.
+
+---
+
+## ⚙️ Setup Instructions
+
+You have **two options** to run this project:
+
+---
+
+### 🔧 Option 1: Manual Setup Using `requirements.txt`
+
+> Recommended for development or when Docker is not available.
+
+#### ✅ Steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/water-pump-predictor.git
+   cd water-pump-predictor
+   ```
+
+2. Create a virtual environment and activate it:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate    # On Windows: venv\Scripts\activate
+   ```
+
+3. Install the dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Start the FastAPI backend:
+   ```bash
+   uvicorn api_app:app --reload
+   ```
+
+5. Open a new terminal and run Streamlit:
+   ```bash
+   streamlit run app.py
+   ```
+
+6. Navigate to:
+   - FastAPI Docs: [http://localhost:8000](http://localhost:8000)
+   - Streamlit UI: [http://localhost:8501](http://localhost:8501)
+
+---
+
+### 🐳 Option 2: Run Using Docker
+
+> Recommended for clean, platform-independent setup.
+
+#### ✅ Prerequisites:
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop) (Windows/macOS/Linux)
+
+#### ✅ Steps:
+
+1. Open **VS Code** (or any IDE) and create a new folder.
+
+2. Inside the folder, create a file named `docker-compose.yml` with the following content:
+
+    ```yaml
+    services:
+      streamlit:
+        image: shakeelahmed1041/streamlit-datadrip:latest
+        ports:
+          - "8501:8501"
+        depends_on:
+          - fastapi
+        restart: unless-stopped
+
+      fastapi:
+        image: shakeelahmed1041/fastapi-datadrip:latest
+        ports:
+          - "8000:8000"
+        restart: unless-stopped
+    ```
+
+3. Open the terminal in that folder and run:
+
+    ```bash
+    docker pull shakeelahmed1041/streamlit-datadrip:latest
+    docker pull shakeelahmed1041/fastapi-datadrip:latest
+    docker-compose up
+    ```
+
+4. In your browser:
+   - Open FastAPI: [http://localhost:8000](http://localhost:8000)
+   - Open Streamlit UI: [http://localhost:8501](http://localhost:8501)
+
+---
+
+## ✅ Requirements
+
+To run this project (manually or via Docker), you’ll need:
+
+- Python 3.11+
+- pip (Python package manager)
+- Docker Desktop (optional, for Docker method)
+- Internet connection (to pull Docker images or install packages)
+
+---
+
+## 📬 Feedback
+
+Feel free to open issues or pull requests if you'd like to contribute or improve this project!
