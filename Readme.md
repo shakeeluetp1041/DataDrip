@@ -26,17 +26,25 @@ XGBoost performed best overall.
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure (Important files)
 
-| File               | Purpose                                     |
-|--------------------|---------------------------------------------|
-| `app.py`           | Streamlit app to capture user input         |
-| `api_app.py`       | FastAPI backend to handle predictions       |
-| `helper_function.py`| Functions used in the prediction pipeline  |
-| `preprocessor.joblib` | ColumnTransformer preprocessing pipeline |
-| `*_model.joblib`   | Trained ML models (DecisionTree, RF, XGBoost) |
-| `requirements.txt` | Python dependencies                         |
-| `docker-compose.yml` | Docker config to run the full stack      |
+| File                  | Purpose                                       |
+|-----------------------|-----------------------------------------------|
+| `code.ipynb`          | code file to train the model                  |
+| `*_.csv`              | data files for training/testing               |
+| `app.py`              | Streamlit app to capture user input           |
+| `app.py`              | Streamlit app to capture user input           |
+| `api_app.py`          | FastAPI backend to handle predictions         |
+| `helper_function.py`  | Functions used in the prediction pipeline     |
+| `preprocessor.joblib` | ColumnTransformer preprocessing pipeline      |
+| `*_model.joblib`      | Trained ML models (DecisionTree, RF, XGBoost) |
+| `requirements.txt`    | Python dependencies                           |
+| `docker-compose.yml`  | Docker config to run the full stack           |
+| `categories.json`     | categories of each column used for training   |
+| `logger_seup.py`      | file and console logging| steup               |
+| `Dockerfile.api`      | instructions for api docker image             |
+| `Dockerfile.streamlit`| instructions for streamlit docker image       |
+| `docker-compose.yml`  | file for multi-container Docker applications  |
 
 ---
 
