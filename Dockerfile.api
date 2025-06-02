@@ -14,9 +14,17 @@ RUN if [ "$(uname)" != "Linux" ]; then pip install --no-cache-dir -r requirement
 RUN pip install --no-cache-dir fastapi uvicorn
 
 # Copy the backend source code and models
+
 COPY api_app.py .
-#COPY *.joblib .
-#COPY *.pkl .
+COPY helper_function.py .
+
+COPY preprocessor.joblib .
+
+COPY DecisionTree_model.joblib .
+
+COPY RandomForest_model.joblib .
+
+COPY XGBoost_model.joblib .
 
 # Expose the port FastAPI will run on
 EXPOSE 8000

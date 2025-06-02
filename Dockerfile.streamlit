@@ -15,10 +15,10 @@ RUN pip install --no-cache-dir streamlit requests
 
 # Copy the necessary files into the container
 COPY app.py .
-#COPY *.py .
-#COPY *.json .
-#COPY *.docx .
-#COPY *.pkl .
+COPY X_test.pkl .
+COPY y_test.pkl .
+COPY categories.json .
+
 
 # Expose the port that Streamlit will run on
 EXPOSE 8501
