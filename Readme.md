@@ -142,7 +142,9 @@ You have **two options** to run this project:
 4. In your browser:
    - Open FastAPI: [http://localhost:8000](http://localhost:8000)
    - Open Streamlit UI: [http://localhost:8501](http://localhost:8501)
-
+5. Perform predictions:
+   - Scenario 1: User can input data in the left pannel, and then click predict to see the result
+   - Scenario 2: Model testing with different number of test samples for accuracy evaluation
 ---
 
 ## ✅ Requirements
