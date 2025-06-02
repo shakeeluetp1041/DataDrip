@@ -33,7 +33,6 @@ XGBoost performed best overall.
 | `code.ipynb`          | code file to train the model                  |
 | `*_.csv`              | data files for training/testing               |
 | `app.py`              | Streamlit app to capture user input           |
-| `app.py`              | Streamlit app to capture user input           |
 | `api_app.py`          | FastAPI backend to handle predictions         |
 | `helper_function.py`  | Functions used in the prediction pipeline     |
 | `preprocessor.joblib` | ColumnTransformer preprocessing pipeline      |
