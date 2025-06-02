@@ -21,3 +21,6 @@ __pycache__/
 
 # Streamlit cache
 .streamlit/
+
+# Ignore all joblib files
+*.joblib
