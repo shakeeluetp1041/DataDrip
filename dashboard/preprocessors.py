@@ -1,3 +1,5 @@
+import pandas as pd
+import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline as SklearnPipeline
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler, StandardScaler
@@ -8,9 +10,8 @@ from sklearn.ensemble import RandomForestClassifier
 from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.over_sampling import SMOTE
 from scipy.sparse import issparse
-import category_encoders as ce  # if you used categorical encoders during training
-import pandas as pd
-import numpy as np
+import category_encoders as ce
+
 
 class LowerCaseStrings(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
@@ -20,8 +21,10 @@ class LowerCaseStrings(BaseEstimator, TransformerMixin):
     def transform(self, X):
         X = X.copy()
         for col in self._str_cols:
-            X[col] = X[col].astype("string").str.lower()
+            if col in X.columns:
+                X[col] = X[col].astype("string").str.lower()
         return X
+
 
 class StringConverter(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
@@ -33,6 +36,7 @@ class StringConverter(BaseEstimator, TransformerMixin):
 
     def get_feature_names_out(self, input_features=None):
         return self.feature_names
+
 
 class YearExtractor(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
@@ -46,6 +50,7 @@ class YearExtractor(BaseEstimator, TransformerMixin):
 
     def get_feature_names_out(self, input_features=None):
         return [self.feature_name]
+
 
 class IQRCapper(BaseEstimator, TransformerMixin):
     def __init__(self, strategy='clip', multiplier=1.5):
@@ -81,6 +86,7 @@ class IQRCapper(BaseEstimator, TransformerMixin):
     def get_feature_names_out(self, input_features=None):
         return [self.feature_name]
 
+
 class ConstructionYearTransformer(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         self.feature_name = X.columns[0]
@@ -94,6 +100,7 @@ class ConstructionYearTransformer(BaseEstimator, TransformerMixin):
 
     def get_feature_names_out(self, input_features=None):
         return [self.feature_name]
+
 
 class ObjectToNumericConverter(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
@@ -115,6 +122,7 @@ class ObjectToNumericConverter(BaseEstimator, TransformerMixin):
     def get_feature_names_out(self, input_features=None):
         return self.feature_names
 
+
 class AgeCalculator(BaseEstimator, TransformerMixin):
     def __init__(self, record_col='date_recorded', install_col='construction_year'):
         self.record_col = record_col
@@ -130,6 +138,7 @@ class AgeCalculator(BaseEstimator, TransformerMixin):
 
     def get_feature_names_out(self, input_features=None):
         return ['age']
+
 
 class FrequencyEncoder(BaseEstimator, TransformerMixin):
     def __init__(self, columns):
@@ -153,6 +162,7 @@ class FrequencyEncoder(BaseEstimator, TransformerMixin):
     def get_feature_names_out(self, input_features=None):
         return self.columns
 
+
 class RegionCodeCombiner(BaseEstimator, TransformerMixin):
     def __init__(self, region_col='region', code_col='region_code', new_col='region_with_code'):
         self.region_col = region_col
@@ -164,8 +174,10 @@ class RegionCodeCombiner(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         X = X.copy()
-        X[self.new_col] = X[self.region_col].astype(str) + "_" + X[self.code_col].astype(str)
+        if self.region_col in X.columns and self.code_col in X.columns:
+            X[self.new_col] = X[self.region_col].astype(str) + "_" + X[self.code_col].astype(str)
         return X
+
 
 class ColumnDropper(BaseEstimator, TransformerMixin):
     def __init__(self, columns_to_drop=None):
@@ -179,9 +191,11 @@ class ColumnDropper(BaseEstimator, TransformerMixin):
             return X.drop(columns=[col for col in self.columns_to_drop if col in X.columns])
         return X
 
+
 class AgePipeline(SklearnPipeline):
     def get_feature_names_out(self, input_features=None):
         return ['age']
+
 
 class GeoContextImputer(BaseEstimator, TransformerMixin):
     def __init__(self):
@@ -192,7 +206,6 @@ class GeoContextImputer(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         X = X.copy()
-
         # Fill subvillage if blank
         if 'subvillage' in X.columns:
             X['subvillage'] = X['subvillage'].replace('', pd.NA)
@@ -237,7 +250,8 @@ class GeoContextImputer(BaseEstimator, TransformerMixin):
         if 'scheme_management' in X.columns:
             X['scheme_management'] = X['scheme_management'].fillna('other')
 
-        return X.replace({pd.NA: np.nan})
+        # Replace all pandas NA values with numpy NaN to avoid downcasting warnings
+        return X.fillna(np.nan)
 
     def fill_subvillage(self, row, df):
         if pd.isna(row['subvillage']):
